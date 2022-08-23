@@ -21,6 +21,6 @@ db_database = '' # str
 
 # other:
 OBSERV_PERIOD = 30 # minutes
-REGISTRATION_FILURE_LIMIT = 3 # count
+REGISTRATION_FAILURE_LIMIT = 3 # count
 ESL_IP = '' # str
 LOG_FORMAT = '%(asctime)s | %(levelname)s | %(message)s [%(filename)s:%(lineno)d]'

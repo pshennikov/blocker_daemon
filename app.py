@@ -56,8 +56,9 @@ def add_alarm(alarm, message, priority, alarm_type):
     try:
         sql_insert_request = "insert into alarms (alarm,message,priority,type,created_at) values " \
                              "('{}','{}',{},{},'{}');".format(alarm, message, priority, alarm_type, now())
-        print('sql_insert_request: {}'.format(sql_insert_request))
+
         logging.debug('add_alarm | sql_insert_request: {}'.format(sql_insert_request))
+
         x.execute(sql_insert_request)
         conn.commit()
 
@@ -106,6 +107,7 @@ def check_event(account):
                              " '{}';".format(account, last_hour(OBSERV_PERIOD), now())
 
         logging.debug('check_event | sql_select_request: {}'.format(sql_select_request))
+        
         x.execute(sql_select_request)
         sql_select_result = x.fetchone()
 
@@ -161,6 +163,7 @@ def get_operator_address(account):
         sql_select_request = "select server from ext_sip_accounts where name = '{}';".format(account)
 
         logging.debug('check_event | sql_select_request: {}'.format(sql_select_request))
+
         x.execute(sql_select_request)
         sql_select_result = x.fetchone()
 
@@ -250,4 +253,3 @@ if __name__ == '__main__':
                         set_block_status(account)
     else:
         logging.warning("can't connect to esl")
-

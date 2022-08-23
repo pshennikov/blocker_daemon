@@ -55,7 +55,7 @@ def add_alarm(alarm, message, priority, alarm_type):
 
     try:
         sql_insert_request = "insert into alarms (alarm,message,priority,type,created_at) values " \
-                             "('{}','{}',{},{},'{}')".format(alarm, message, priority, alarm_type, now())
+                             "('{}','{}',{},{},'{}');".format(alarm, message, priority, alarm_type, now())
         print('sql_insert_request: {}'.format(sql_insert_request))
         logging.debug('add_alarm | sql_insert_request: {}'.format(sql_insert_request))
         x.execute(sql_insert_request)
@@ -78,7 +78,7 @@ def add_event(account):
 
     try:
         sql_insert_request = "insert into events (gateway,happened_at) values " \
-                             "('{}','{}')".format(account, now())
+                             "('{}','{}');".format(account, now())
 
         logging.debug('add_event | sql_insert_request: {}'.format(sql_insert_request))
 
@@ -103,7 +103,7 @@ def check_event(account):
 
     try:
         sql_select_request = "select count(id) from events where gateway = '{}' and happened_at between '{}' and" \
-                             " '{}'".format(account, last_hour(OBSERV_PERIOD), now())
+                             " '{}';".format(account, last_hour(OBSERV_PERIOD), now())
 
         logging.debug('check_event | sql_select_request: {}'.format(sql_select_request))
         x.execute(sql_select_request)
@@ -150,6 +150,38 @@ def set_block_status(sip_account):
     conn.close()
 
 
+# server
+def get_operator_address(account):
+    logging.info('check_event | try get operator address, gateway: {}'.format(account))
+    conn = MySQLdb.connect(host=db_host, port=db_port, user=db_user, passwd=db_password, db=db_database, charset='utf8')
+    x = conn.cursor()
+    sql_select_result = None
+
+    try:
+        sql_select_request = "select server from ext_sip_accounts where name = '{}';".format(account)
+
+        logging.debug('check_event | sql_select_request: {}'.format(sql_select_request))
+        x.execute(sql_select_request)
+        sql_select_result = x.fetchone()
+
+        logging.debug('check_event | select return: {}'.format(sql_select_result))
+
+        conn.commit()
+
+    except (IOError, Exception) as e:
+        logging.debug("check_event | except: {}".format(e))
+
+        conn.rollback()
+        # conn.close()
+
+    logging.debug('check_event | function will return: {}'.format(sql_select_result))
+
+    conn.close()
+    logging.debug('check_event | db conn.close()')
+
+    return sql_select_result
+
+
 def execute_esl_command(cmd, ip, password):
     con = ESL.ESLconnection(ip, '8021', password)
 
@@ -191,7 +223,9 @@ if __name__ == '__main__':
 
                     logging.debug('{} | count: {}'.format(account, count))
 
-                    if count >= REGISTRATION_FAILURE_LIMIT:
+                    operator = get_operator_address(account)
+
+                    if count >= REGISTRATION_FAILURE_LIMIT or operator in OPERATOR_LIST:
                         logging.debug('blocking gateway: {}'.format(account))
 
                         add_alarm('blocked_sip_account', 'blocked external sip accounts ' + str(account), '3', '1')

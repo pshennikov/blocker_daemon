@@ -243,12 +243,12 @@ if __name__ == '__main__':
                             logging.info('path: {} - exists!'.format(blocking_path))
 
                         copy_file(SIP_ACCOUNT_PATH, blocking_path, account + SIP_ACCOUNT_FILE_TYPE)
-                        # remove_file(SIP_ACCOUNT_PATH, account + SIP_ACCOUNT_FILE_TYPE)
+                        remove_file(SIP_ACCOUNT_PATH, account + SIP_ACCOUNT_FILE_TYPE)
 
                         cmd = 'sofia profile external killgw {}'.format(account)
                         logging.info('cmd: {}'.format(cmd))
 
-                        # logging.debug(execute_esl_command(cmd, '127.0.0.1', 'ClueCon'))
+                        logging.debug(execute_esl_command(cmd, '127.0.0.1', 'ClueCon'))
 
                         set_block_status(account)
     else:

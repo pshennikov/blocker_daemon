@@ -20,7 +20,8 @@ db_password = '' # str
 db_database = '' # str
 
 # other:
-OBSERV_PERIOD = 30 # minutes
-REGISTRATION_FAILURE_LIMIT = 3 # count
+OBSERV_PERIOD = 30  # minutes
+REGISTRATION_FAILURE_LIMIT = 3  # count
+OPERATOR_LIST = ['']  # list
 ESL_IP = '' # str
 LOG_FORMAT = '%(asctime)s | %(levelname)s | %(message)s [%(filename)s:%(lineno)d]'

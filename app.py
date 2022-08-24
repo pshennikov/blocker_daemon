@@ -226,7 +226,9 @@ if __name__ == '__main__':
 
                     logging.debug('{} | count: {}'.format(account, count))
 
-                    operator = get_operator_address(account)
+                    operator = get_operator_address(account)[0]
+
+                    logging.debug('{} | operator: {}'.format(account, operator))
 
                     if count >= REGISTRATION_FAILURE_LIMIT or operator in OPERATOR_LIST:
                         logging.debug('blocking gateway: {}'.format(account))

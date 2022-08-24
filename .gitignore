@@ -1,5 +1,6 @@
 config.py
 config.pyc
 
-.idea/
+.gitconfig
 
+.idea/

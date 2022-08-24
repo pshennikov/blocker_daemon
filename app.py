@@ -251,5 +251,7 @@ if __name__ == '__main__':
                         logging.debug(execute_esl_command(cmd, '127.0.0.1', 'ClueCon'))
 
                         set_block_status(account)
+                    else:
+                        logging.debug('condition for {} is false'.format(account))
     else:
         logging.warning("can't connect to esl")

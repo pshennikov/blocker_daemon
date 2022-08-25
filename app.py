@@ -147,12 +147,12 @@ def set_block_status(sip_account):
     except (IOError, Exception) as e:
         logging.debug("set_block_status | some except: {}".format(e))
         conn.rollback()
-        conn.close()
+        # conn.close()
 
     conn.close()
+    logging.debug('set_block_status | db conn.close()')
 
 
-# server
 def get_operator_address(account):
     logging.info('check_event | try get operator address, gateway: {}'.format(account))
     conn = MySQLdb.connect(host=db_host, port=db_port, user=db_user, passwd=db_password, db=db_database, charset='utf8')

@@ -182,6 +182,9 @@ def get_operator_address(account):
     conn.close()
     logging.debug('check_event | db conn.close()')
 
+    if sql_select_result is None:
+        sql_select_result = ['null']
+
     return sql_select_result
 
 

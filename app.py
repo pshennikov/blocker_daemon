@@ -20,6 +20,10 @@ def now():
     return str(datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
 
 
+def hour_now():
+    return int(datetime.now().strftime('%H'))
+
+
 def date_now():
     return str(datetime.now().strftime('%Y-%m-%d'))
 
@@ -233,7 +237,7 @@ if __name__ == '__main__':
 
                     logging.debug('{} | operator: {}'.format(account, operator))
 
-                    if count >= REGISTRATION_FAILURE_LIMIT or operator in OPERATOR_LIST:
+                    if (count >= REGISTRATION_FAILURE_LIMIT and hour_now() >= 6) or operator in OPERATOR_LIST:
                         logging.debug('blocking gateway: {}'.format(account))
 
                         add_alarm('blocked_sip_account', 'blocked external sip accounts ' + str(account), '3', '1')

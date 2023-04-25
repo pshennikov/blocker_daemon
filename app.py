@@ -133,13 +133,13 @@ def check_event(account):
     return sql_select_result
 
 
-def set_block_status(sip_account):
+def set_block_status(sip_account, account_table):
     logging.info('set_block_status | try set block status, gateway: {}'.format(sip_account))
 
     conn = MySQLdb.connect(host=db_host, port=db_port, user=db_user, passwd=db_password, db=db_database, charset='utf8')
     x = conn.cursor()
     try:
-        sql_update_is_blocked = 'update ext_sip_accounts set is_blocked = true where name = {};'.format(sip_account)
+        sql_update_is_blocked = 'update {} set is_blocked = true where name = {};'.format(account_table, sip_account)
 
         logging.debug('set_block_status | sql_update_is_blocked: {}'.format(sql_update_is_blocked))
 
@@ -242,24 +242,40 @@ if __name__ == '__main__':
 
                         add_alarm('blocked_sip_account', 'blocked external sip accounts ' + str(account), '3', '1')
 
-                        blocking_path = BLOCKED_ACCOUNT_PATH + '_' + date_now() + '/'
-                        logging.debug('path: {}/{}'.format(blocking_path, account))
+                        if SIP_CLIENT_TRUNK_PREFIX in account:
+                            blocking_path = BLOCKED_CLIENT_TRUNK_PATH + '_' + date_now() + '/'
+                            logging.debug('path: {}/{}'.format(blocking_path, account))
 
-                        if not os.path.exists(blocking_path):
-                            logging.debug('make path: {}'.format(blocking_path))
-                            os.makedirs(blocking_path)
+                            if not os.path.exists(blocking_path):
+                                logging.debug('make path: {}'.format(blocking_path))
+                                os.makedirs(blocking_path)
+                            else:
+                                logging.info('path: {} - exists!'.format(blocking_path))
+
+                            copy_file(SIP_CLIENT_TRUNK_PATH, blocking_path, account + SIP_ACCOUNT_FILE_TYPE)
+                            remove_file(SIP_CLIENT_TRUNK_PATH, account + SIP_ACCOUNT_FILE_TYPE)
+                            set_block_status(account, 'client_trunk')
+
                         else:
-                            logging.info('path: {} - exists!'.format(blocking_path))
+                            blocking_path = BLOCKED_ACCOUNT_PATH + '_' + date_now() + '/'
+                            logging.debug('path: {}/{}'.format(blocking_path, account))
 
-                        copy_file(SIP_ACCOUNT_PATH, blocking_path, account + SIP_ACCOUNT_FILE_TYPE)
-                        remove_file(SIP_ACCOUNT_PATH, account + SIP_ACCOUNT_FILE_TYPE)
+                            if not os.path.exists(blocking_path):
+                                logging.debug('make path: {}'.format(blocking_path))
+                                os.makedirs(blocking_path)
+                            else:
+                                logging.info('path: {} - exists!'.format(blocking_path))
+
+                            copy_file(SIP_ACCOUNT_PATH, blocking_path, account + SIP_ACCOUNT_FILE_TYPE)
+                            remove_file(SIP_ACCOUNT_PATH, account + SIP_ACCOUNT_FILE_TYPE)
+                            set_block_status(account, 'ext_sip_accounts')
 
                         cmd = 'sofia profile external killgw {}'.format(account)
                         logging.info('cmd: {}'.format(cmd))
 
                         logging.debug(execute_esl_command(cmd, '127.0.0.1', 'ClueCon'))
 
-                        set_block_status(account)
+                        # set_block_status(account)
                     else:
                         logging.debug('condition for {} is false'.format(account))
     else:

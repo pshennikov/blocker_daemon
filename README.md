@@ -11,7 +11,10 @@ blocker_daemon подписывается в ESL Freeswitch на eventы о не
 LOG_PATH = '/var/log/freeswitch/'
 SIP_ACCOUNT_PATH = '/etc/freeswitch/directory/default/'
 SIP_ACCOUNT_FILE_TYPE = '.xml'
+SIP_CLIENT_TRUNK_PATH = '/etc/freeswitch/directory/client_trunk/'
+SIP_CLIENT_TRUNK_PREFIX = 'client_trunk'
 BLOCKED_ACCOUNT_PATH = '/etc/freeswitch/directory/blocked'
+BLOCKED_CLIENT_TRUNK_PATH = '/etc/freeswitch/directory/client_trunk_blocked'
 
 ### # mysql:
 db_host = '' # str  
